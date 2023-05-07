@@ -17,9 +17,25 @@ public class Barrier {
 
         ExecutorService executorService = Executors.newFixedThreadPool(10);
         for (int i = 0; i < 10; i++) {
-            Runnable runnable = new WorkThreadBarrier(s);
+            // Runnable runnable = new WorkThreadBarrier(s);
             
-            executorService.submit(runnable);
+            // executorService.submit(runnable);
+            String name = String.format("Thread: %d", i);
+            executorService.submit(() -> {
+                try {
+                    s.acquire();
+                    // critical section
+        
+                    System.out.println("Begin: Critical Section: " + name);
+                    Thread.sleep(new Random().nextInt(2, 5) * 1000);
+                    System.out.println("End: Critical Section: " + name);
+        
+                    s.release();
+        
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
         }
 
         executorService.shutdown();
